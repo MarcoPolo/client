@@ -554,21 +554,25 @@ const editSuccess = (res, action, state: TypedState) => {
 const editFailed = (res, {payload: {editID}}) => Saga.put(FsGen.createEditFailed({editID}))
 
 function* openPathItem(action: FsGen.OpenPathItemPayload): Saga.SagaGenerator<any, any> {
-  const {path, routePath} = action.payload
+  const {path, routePath, openDirectly} = action.payload
   const state: TypedState = yield Saga.select()
   const pathItem = state.fs.pathItems.get(path)
   if (!pathItem || pathItem.type === 'folder') {
-    yield Saga.put(
-      putActionIfOnPath(
-        routePath,
-        navigateAppend([
-          {
-            props: {path},
-            selected: 'folder',
-          },
-        ])
+    const navigate = navigateAppend([{
+      props: {path},
+      selected: 'folder',
+    }])
+    if (openDirectly) {
+      yield Saga.put(navigate)
+    } else {
+      if (!routePath) return
+      yield Saga.put(
+        putActionIfOnPath(
+          routePath,
+          navigate
+        )
       )
-    )
+    }
     return
   }
 
@@ -581,17 +585,21 @@ function* openPathItem(action: FsGen.OpenPathItemPayload): Saga.SagaGenerator<an
     bare = isMobile && Constants.viewTypeFromMimeType(mimeType) === 'image'
   }
 
-  yield Saga.put(
-    putActionIfOnPath(
-      routePath,
-      navigateAppend([
-        {
-          props: {path},
-          selected: bare ? 'barePreview' : 'preview',
-        },
-      ])
+  const navigate = navigateAppend([{
+    props: {path},
+    selected: bare ? 'barePreview' : 'preview',
+  }])
+  if (openDirectly) {
+    yield Saga.put(navigate)
+  } else {
+    if (!routePath) return
+    yield Saga.put(
+      putActionIfOnPath(
+        routePath,
+        navigate
+      )
     )
-  )
+  }
 }
 
 const letResetUserBackIn = ({payload: {id, username}}: FsGen.LetResetUserBackInPayload) =>

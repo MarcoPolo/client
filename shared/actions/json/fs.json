@@ -145,7 +145,8 @@
     },
     "openPathItem": {
       "path": "Types.Path",
-      "routePath": "I.List<string>"
+      "routePath?": "I.List<string>",
+      "openDirectly?": "boolean"
     },
     "letResetUserBackIn": {
       "id": "RPCTypes.TeamID",
@@ -155,6 +156,5 @@
       "type": "Types.OpenDialogType",
       "parentPath": "Types.Path"
     },
-
   }
 }
