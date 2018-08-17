@@ -138,6 +138,11 @@ const maybeSelectDefaultAccount = (action: WalletsGen.AccountsReceivedPayload, s
     })
   )
 
+const loadRequestDetail = (state: TypedState, action: WalletsGen.LoadRequestDetailPayload) =>
+  RPCTypes.localGetRequestDetailsLocalRpcPromise({reqID: action.payload.requestID}).then(request =>
+    WalletsGen.createRequestDetailReceived({request})
+  )
+
 function* walletsSaga(): Saga.SagaGenerator<any, any> {
   yield Saga.actionToPromise([WalletsGen.loadAccounts, WalletsGen.linkedExistingAccount], loadAccounts)
   yield Saga.actionToPromise(
@@ -158,6 +163,7 @@ function* walletsSaga(): Saga.SagaGenerator<any, any> {
     navigateToAccount
   )
   yield Saga.safeTakeEveryPure(WalletsGen.accountsReceived, maybeSelectDefaultAccount)
+  yield Saga.actionToPromise(WalletsGen.loadRequestDetail, loadRequestDetail)
 }
 
 export default walletsSaga

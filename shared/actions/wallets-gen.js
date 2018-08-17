@@ -20,8 +20,10 @@ export const loadAccounts = 'wallets:loadAccounts'
 export const loadAssets = 'wallets:loadAssets'
 export const loadPaymentDetail = 'wallets:loadPaymentDetail'
 export const loadPayments = 'wallets:loadPayments'
+export const loadRequestDetail = 'wallets:loadRequestDetail'
 export const paymentDetailReceived = 'wallets:paymentDetailReceived'
 export const paymentsReceived = 'wallets:paymentsReceived'
+export const requestDetailReceived = 'wallets:requestDetailReceived'
 export const secretKeyReceived = 'wallets:secretKeyReceived'
 export const secretKeySeen = 'wallets:secretKeySeen'
 export const selectAccount = 'wallets:selectAccount'
@@ -55,6 +57,7 @@ type _LoadPaymentDetailPayload = $ReadOnly<{|
   paymentID: StellarRPCTypes.PaymentID,
 |}>
 type _LoadPaymentsPayload = $ReadOnly<{|accountID: Types.AccountID|}>
+type _LoadRequestDetailPayload = $ReadOnly<{|requestID: StellarRPCTypes.KeybaseRequestID|}>
 type _PaymentDetailReceivedPayload = $ReadOnly<{|
   accountID: Types.AccountID,
   paymentID: StellarRPCTypes.PaymentID,
@@ -66,6 +69,7 @@ type _PaymentsReceivedPayload = $ReadOnly<{|
   accountID: Types.AccountID,
   payments: Array<Types.Payment>,
 |}>
+type _RequestDetailReceivedPayload = $ReadOnly<{|request: StellarRPCTypes.RequestDetailsLocal|}>
 type _SecretKeyReceivedPayload = $ReadOnly<{|
   accountID: Types.AccountID,
   secretKey: HiddenString,
@@ -114,6 +118,10 @@ export const createExportSecretKey = (payload: _ExportSecretKeyPayload) => ({err
  */
 export const createLinkExistingAccount = (payload: _LinkExistingAccountPayload) => ({error: false, payload, type: linkExistingAccount})
 /**
+ * Load a request's details
+ */
+export const createLoadRequestDetail = (payload: _LoadRequestDetailPayload) => ({error: false, payload, type: loadRequestDetail})
+/**
  * Load extra detail for one given payment
  */
 export const createLoadPaymentDetail = (payload: _LoadPaymentDetailPayload) => ({error: false, payload, type: loadPaymentDetail})
@@ -133,6 +141,10 @@ export const createLoadPayments = (payload: _LoadPaymentsPayload) => ({error: fa
  * Select an account. Optionally navigate to the account page.
  */
 export const createSelectAccount = (payload: _SelectAccountPayload) => ({error: false, payload, type: selectAccount})
+/**
+ * Store a request's details
+ */
+export const createRequestDetailReceived = (payload: _RequestDetailReceivedPayload) => ({error: false, payload, type: requestDetailReceived})
 /**
  * The service responded with an error or that the account name is valid.
  */
@@ -181,8 +193,10 @@ export type LoadAccountsPayload = $Call<typeof createLoadAccounts, _LoadAccounts
 export type LoadAssetsPayload = $Call<typeof createLoadAssets, _LoadAssetsPayload>
 export type LoadPaymentDetailPayload = $Call<typeof createLoadPaymentDetail, _LoadPaymentDetailPayload>
 export type LoadPaymentsPayload = $Call<typeof createLoadPayments, _LoadPaymentsPayload>
+export type LoadRequestDetailPayload = $Call<typeof createLoadRequestDetail, _LoadRequestDetailPayload>
 export type PaymentDetailReceivedPayload = $Call<typeof createPaymentDetailReceived, _PaymentDetailReceivedPayload>
 export type PaymentsReceivedPayload = $Call<typeof createPaymentsReceived, _PaymentsReceivedPayload>
+export type RequestDetailReceivedPayload = $Call<typeof createRequestDetailReceived, _RequestDetailReceivedPayload>
 export type SecretKeyReceivedPayload = $Call<typeof createSecretKeyReceived, _SecretKeyReceivedPayload>
 export type SecretKeySeenPayload = $Call<typeof createSecretKeySeen, _SecretKeySeenPayload>
 export type SelectAccountPayload = $Call<typeof createSelectAccount, _SelectAccountPayload>
@@ -207,8 +221,10 @@ export type Actions =
   | LoadAssetsPayload
   | LoadPaymentDetailPayload
   | LoadPaymentsPayload
+  | LoadRequestDetailPayload
   | PaymentDetailReceivedPayload
   | PaymentsReceivedPayload
+  | RequestDetailReceivedPayload
   | SecretKeyReceivedPayload
   | SecretKeySeenPayload
   | SelectAccountPayload
