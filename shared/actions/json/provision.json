@@ -40,5 +40,6 @@
       "error": "?HiddenString"
     },
     "addNewDevice": { "otherDeviceType": ["'desktop'", "'mobile'"] },
+    "cancelProvisioning": {},
   }
 }

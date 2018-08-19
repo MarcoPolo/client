@@ -69,6 +69,11 @@ class ProvisioningManager {
     return response
   }
 
+  cancelProvisioning = () => {
+    const response = this._getAndClearResponse(this._stashedResponseKey)
+    response.error()
+  }
+
   // Choosing a device to use to provision
   chooseDeviceHandler = (
     params: RPCTypes.ProvisionUiChooseDeviceRpcParam,
@@ -428,6 +433,14 @@ const showFinalErrorPage = (state: TypedState) => {
   }
 }
 
+const cancelProvisioning = (state: TypedState) => {
+  ProvisioningManager.getSingleton().cancelProvisioning(state)
+}
+
+const navToRootLogin = () => {
+  return Saga.put(RouteTree.navigateTo([], [Tabs.loginTab]))
+}
+
 const showUsernameEmailPage = () => Saga.put(RouteTree.navigateAppend(['usernameOrEmail'], [Tabs.loginTab]))
 
 function* provisionSaga(): Saga.SagaGenerator<any, any> {
@@ -448,6 +461,9 @@ function* provisionSaga(): Saga.SagaGenerator<any, any> {
     [ProvisionGen.submitPassphrase, ProvisionGen.submitPaperkey],
     submitPassphraseOrPaperkey
   )
+
+  yield Saga.actionToAction(ProvisionGen.cancelProvisioning, cancelProvisioning)
+  yield Saga.actionToAction(ProvisionGen.cancelProvisioning, navToRootLogin)
 
   // Screens
   yield Saga.actionToAction(ProvisionGen.startProvision, showUsernameEmailPage)

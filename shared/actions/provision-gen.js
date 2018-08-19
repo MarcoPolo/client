@@ -11,6 +11,7 @@ import {RPCError} from '../util/errors'
 // Constants
 export const resetStore = 'common:resetStore' // not a part of provision but is handled by every reducer
 export const addNewDevice = 'provision:addNewDevice'
+export const cancelProvisioning = 'provision:cancelProvisioning'
 export const provisionError = 'provision:provisionError'
 export const showCodePage = 'provision:showCodePage'
 export const showDeviceListPage = 'provision:showDeviceListPage'
@@ -32,6 +33,7 @@ export const switchToGPGSignOnly = 'provision:switchToGPGSignOnly'
 
 // Payload Types
 type _AddNewDevicePayload = $ReadOnly<{|otherDeviceType: 'desktop' | 'mobile'|}>
+type _CancelProvisioningPayload = void
 type _ProvisionErrorPayload = $ReadOnly<{|error: ?HiddenString|}>
 type _ShowCodePagePayload = $ReadOnly<{|
   code: HiddenString,
@@ -67,6 +69,7 @@ export const createShowNewDeviceNamePage = (payload: _ShowNewDeviceNamePagePaylo
  */
 export const createShowDeviceListPage = (payload: _ShowDeviceListPagePayload) => ({error: false, payload, type: showDeviceListPage})
 export const createAddNewDevice = (payload: _AddNewDevicePayload) => ({error: false, payload, type: addNewDevice})
+export const createCancelProvisioning = (payload: _CancelProvisioningPayload) => ({error: false, payload, type: cancelProvisioning})
 export const createProvisionError = (payload: _ProvisionErrorPayload) => ({error: false, payload, type: provisionError})
 export const createShowCodePage = (payload: _ShowCodePagePayload) => ({error: false, payload, type: showCodePage})
 export const createShowFinalErrorPage = (payload: _ShowFinalErrorPagePayload) => ({error: false, payload, type: showFinalErrorPage})
@@ -86,6 +89,7 @@ export const createSwitchToGPGSignOnly = (payload: _SwitchToGPGSignOnlyPayload) 
 
 // Action Payloads
 export type AddNewDevicePayload = $Call<typeof createAddNewDevice, _AddNewDevicePayload>
+export type CancelProvisioningPayload = $Call<typeof createCancelProvisioning, _CancelProvisioningPayload>
 export type ProvisionErrorPayload = $Call<typeof createProvisionError, _ProvisionErrorPayload>
 export type ShowCodePagePayload = $Call<typeof createShowCodePage, _ShowCodePagePayload>
 export type ShowDeviceListPagePayload = $Call<typeof createShowDeviceListPage, _ShowDeviceListPagePayload>
@@ -109,6 +113,7 @@ export type SwitchToGPGSignOnlyPayload = $Call<typeof createSwitchToGPGSignOnly,
 // prettier-ignore
 export type Actions =
   | AddNewDevicePayload
+  | CancelProvisioningPayload
   | ProvisionErrorPayload
   | ShowCodePagePayload
   | ShowDeviceListPagePayload
