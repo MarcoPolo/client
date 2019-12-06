@@ -11,6 +11,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -26,6 +27,7 @@ import (
 	"github.com/keybase/client/go/kbfs/libmime"
 	"github.com/keybase/client/go/kbfs/libpages/config"
 	"github.com/keybase/client/go/kbfs/tlf"
+	terrafirma "github.com/marcopolo/go-wasm-terrafirma"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/acme"
 	"golang.org/x/crypto/acme/autocert"
@@ -453,7 +455,44 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.setAccessControlAllowOriginHeader(w, accessControlAllowOrigin)
 	}
 
-	http.FileServer(realFS.ToHTTPFileSystem(ctx)).ServeHTTP(w, r)
+	parts := strings.SplitAfter(r.URL.Path, ".wasm")
+	if len(parts) > 1 {
+		fmt.Printf("wasm is %v\n", parts[0])
+		s.config.Logger.Debug(fmt.Sprintf("wasm is %v", parts[0]))
+		file, err := realFS.Open(parts[0])
+		if err != nil {
+			s.handleError(w, err)
+		}
+
+		bytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			s.handleError(w, err)
+		}
+
+		imports := terrafirma.GetImports()
+		s.config.Logger.Debug(fmt.Sprintf("result: %v\n", err))
+		handler := terrafirma.NewWasmHandler(bytes, imports)
+		handler.ServeHTTP(w, r)
+		// instance, err := wasm.NewInstanceWithImports(bytes, imports)
+		// if err != nil {
+		// 	s.handleError(w, err)
+		// }
+		// defer instance.Close()
+		// s.config.Logger.Debug(fmt.Sprintf("exports: %v\n", instance.Exports))
+		// if run, ok := instance.Exports["run"]; ok {
+		//do something here
+		// _, err := run(10, 2)
+		// w.Header().Set("Content-Type", "text/plain; charset=utf-8") // normal header
+		// w.WriteHeader(http.StatusOK)
+		// io.WriteString(w, fmt.Sprintf("result: %v\n", result))
+		// } else {
+		// 	w.Header().Set("Content-Type", "text/plain; charset=utf-8") // normal header
+		// 	w.WriteHeader(http.StatusNotFound)
+		// 	io.WriteString(w, "Handler not found in wasm file")
+		// }
+	} else {
+		http.FileServer(realFS.ToHTTPFileSystem(ctx)).ServeHTTP(w, r)
+	}
 }
 
 // allowDomain is used to determine whether a given domain should be
